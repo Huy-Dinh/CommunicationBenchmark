@@ -10,7 +10,7 @@
                 "-Iheader",
                 "-o",
                 "debug\\main",
-                "src\\testheader.cpp",
+                "src\\BenchmarkTestCase.cpp",
                 "main.cpp"
             ],
             "group": {
