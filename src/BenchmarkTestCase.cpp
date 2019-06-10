@@ -25,13 +25,13 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
     unsigned int noOfPacketsLeft = mNumberOfPacket;
     while (noOfPacketsLeft > 0)
     {
-        /* If a sending fails, the sending test fails */
+        /* If an attempt to send fails, the sending test fails */
         if ((*pSendFunction)(pDataPointer, mPacketSize) != 0)
         {
             return BENCHMARK_SEND_FAIL;
         }
         --noOfPacketsLeft;
-        /* Delay to wait for the next packet */
+        /* Wait to send the next packet */
         (*pDelayFunction)(mPacketDelay);
     }
     /* If we reach here it's assumed that every packets have been put into 
