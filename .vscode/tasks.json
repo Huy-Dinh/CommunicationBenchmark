@@ -7,10 +7,11 @@
             "command": "g++",
             "args": [
                 "-g",
+                "-Iheader",
                 "-o",
-                "helloworld",
-                "testheader.cpp",
-                "helloworld.cpp"
+                "debug\\main",
+                "src\\testheader.cpp",
+                "main.cpp"
             ],
             "group": {
                 "kind": "build",
