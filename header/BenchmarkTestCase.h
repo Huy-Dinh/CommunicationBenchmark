@@ -1,3 +1,6 @@
+#ifndef BENCHMARKTESTCASE_H
+#define BENCHMARKTESTCASE_H
+
 #include <iostream>
 #include "BenchmarkConfig.h"
 
@@ -55,3 +58,5 @@ public:
     virtual ~BenchmarkTestCase()
     {}
 };
+
+#endif
