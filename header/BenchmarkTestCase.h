@@ -22,7 +22,7 @@ typedef enum
 } BenchmarkReceiveResult_t;
 
 typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
-typedef void (*delayFuncPtr_t)(unsigned int);
+typedef void (*delayFuncPtr_t)(unsigned long);
 typedef unsigned long (*getTickFuncPtr_t)();
 
 class BenchmarkTestCase

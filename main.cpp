@@ -4,13 +4,8 @@
 
 unsigned char testBuffer[1000];
 
-BenchmarkTestCase myTestCase("My Test case 1", 1000, 10, 1000, testBuffer);
+BenchmarkTestCase myTestCase("My Test case 1", 1000, 10, 1000000, testBuffer);
 BenchmarkTestCase yourTestCase("My Test case 2", 50, 100, 10, testBuffer);
-
-void mock_delay_function(unsigned int delayTime)
-{
-    Sleep(delayTime);
-}
 
 void mock_receive_callback(unsigned char* pBuffer, unsigned int size)
 {
@@ -34,13 +29,19 @@ void getFrequency()
     QueryPerformanceFrequency(&nFrequency);
 }
 
-unsigned long getMilliseconds()
+unsigned long getMicroseconds()
 {
     LARGE_INTEGER currentTickCount;
     QueryPerformanceCounter(&currentTickCount);
-    currentTickCount.QuadPart *= 1000;
+    currentTickCount.QuadPart *= 1000000;
     currentTickCount.QuadPart /= nFrequency.QuadPart;
     return (unsigned long) currentTickCount.QuadPart;
+}
+
+void mock_delay_function(unsigned long delayTime)
+{
+    unsigned long startTime = getMicroseconds();
+    while (getMicroseconds() - startTime < delayTime);
 }
 
 int main()
@@ -48,7 +49,7 @@ int main()
     getFrequency();
     BenchmarkTestCase::setSendFunction(&mySendFunction);
     BenchmarkTestCase::setDelayFunction(&mock_delay_function);
-    BenchmarkTestCase::setGetTickFunction(&getMilliseconds);
+    BenchmarkTestCase::setGetTickFunction(&getMicroseconds);
     myTestCase.runSend();
     myTestCase.printSendResult();
 }
