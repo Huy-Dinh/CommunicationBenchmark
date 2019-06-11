@@ -6,9 +6,14 @@ typedef enum
     BENCHMARK_SEND_PASS = 0,
     BENCHMARK_SEND_FAIL
 } BenchmarkSendResult_t;
+/* The result of the packet check after receiving */
+typedef enum
+{
+    BENCHMARK_RECEIVE_CHECK_PASS = 0,
+    BENCHMARK_RECEIVE_CHECK_FAIL
+} BenchmarkReceiveResult_t;
 
 typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
-typedef unsigned char (*receiveFuncPtr_t)(unsigned char *, unsigned int &);
 typedef void (*delayFuncPtr_t)(unsigned int);
 
 
@@ -21,7 +26,6 @@ private:
     unsigned int mPacketDelay;
     unsigned char * pDataPointer;
     static sendFuncPtr_t pSendFunction;
-    static receiveFuncPtr_t pReceiveFunction;
     static delayFuncPtr_t pDelayFunction;
 public:
     BenchmarkTestCase(std::string testCaseName, unsigned int packetSize, 
