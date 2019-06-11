@@ -23,7 +23,7 @@ typedef enum
 
 typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
 typedef void (*delayFuncPtr_t)(unsigned int);
-
+typedef unsigned long (*getTickFuncPtr_t)();
 
 class BenchmarkTestCase
 {
@@ -33,9 +33,12 @@ private:
     unsigned int mNumberOfPacket;
     unsigned int mExpectedNoOfPacket; //For receiving
     unsigned int mPacketDelay;
-    unsigned char * pDataPointer;
+    unsigned char * pDataBuffer;
+
     static sendFuncPtr_t pSendFunction;
     static delayFuncPtr_t pDelayFunction;
+    static getTickFuncPtr_t pGetTickFunction;
+
     BenchmarkSendResult_t mSendResult;
     BenchmarkReceiveResult_t mReceiveResult;
 public:
@@ -46,6 +49,7 @@ public:
     BenchmarkPacketCheckResult_t checkReceivedPacket(unsigned char * pBuffer, unsigned int length);
     static void setSendFunction(sendFuncPtr_t sendFunction);
     static void setDelayFunction(delayFuncPtr_t delayFunction);
+    static void setGetTickFunction(getTickFuncPtr_t getTickFunction);
     void printSendResult();
     void printReceiveResult();
     virtual ~BenchmarkTestCase()

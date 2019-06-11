@@ -1,9 +1,10 @@
 #include "BenchmarkTestCase.h"
 #include <windows.h>
+#include <stdio.h>
 
 unsigned char testBuffer[1000];
 
-BenchmarkTestCase myTestCase("My Test case 1", 100, 100, 100, testBuffer);
+BenchmarkTestCase myTestCase("My Test case 1", 1000, 10, 1000, testBuffer);
 BenchmarkTestCase yourTestCase("My Test case 2", 50, 100, 10, testBuffer);
 
 void mock_delay_function(unsigned int delayTime)
@@ -25,10 +26,30 @@ BenchmarkSendResult_t mySendFunction(unsigned char* pBuffer, unsigned int size)
     return BENCHMARK_SEND_PASS;
 }
 
+/* Time ticks */
+
+LARGE_INTEGER nFrequency;
+void getFrequency()
+{
+    QueryPerformanceFrequency(&nFrequency);
+}
+
+unsigned long getMilliseconds()
+{
+    LARGE_INTEGER currentTickCount;
+    QueryPerformanceCounter(&currentTickCount);
+    currentTickCount.QuadPart *= 1000;
+    currentTickCount.QuadPart /= nFrequency.QuadPart;
+    return (unsigned long) currentTickCount.QuadPart;
+}
+
 int main()
 {
+    getFrequency();
     BenchmarkTestCase::setSendFunction(&mySendFunction);
     BenchmarkTestCase::setDelayFunction(&mock_delay_function);
+    BenchmarkTestCase::setGetTickFunction(&getMilliseconds);
     myTestCase.runSend();
     myTestCase.printSendResult();
 }
+
