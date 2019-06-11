@@ -1,15 +1,16 @@
 #include <iostream>
 
-typedef unsigned char (*sendFuncPtr_t)(unsigned char *, unsigned int);
-typedef unsigned char (*receiveFuncPtr_t)(unsigned char *, unsigned int &);
-typedef void (*delayFuncPtr_t)(unsigned int);
-
-/* The result of the test */
+/* The result of the sending attempt */
 typedef enum 
 {
     BENCHMARK_SEND_PASS = 0,
     BENCHMARK_SEND_FAIL
 } BenchmarkSendResult_t;
+
+typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
+typedef unsigned char (*receiveFuncPtr_t)(unsigned char *, unsigned int &);
+typedef void (*delayFuncPtr_t)(unsigned int);
+
 
 class BenchmarkTestCase
 {

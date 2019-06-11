@@ -26,7 +26,7 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
     while (noOfPacketsLeft > 0)
     {
         /* If an attempt to send fails, the sending test fails */
-        if ((*pSendFunction)(pDataPointer, mPacketSize) != 0)
+        if ((*pSendFunction)(pDataPointer, mPacketSize) != BENCHMARK_SEND_PASS)
         {
             return BENCHMARK_SEND_FAIL;
         }

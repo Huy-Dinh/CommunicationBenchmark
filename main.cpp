@@ -1,8 +1,8 @@
 #include "BenchmarkTestCase.h"
 
-unsigned char mySendFunction(unsigned char* pBuffer, unsigned int size)
+BenchmarkSendResult_t mySendFunction(unsigned char* pBuffer, unsigned int size)
 {
-    return 1;
+    return BENCHMARK_SEND_PASS;
 }
 
 int main()
