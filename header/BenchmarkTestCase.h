@@ -1,4 +1,5 @@
 #include <iostream>
+#include "BenchmarkConfig.h"
 
 /* The result of the sending attempt */
 typedef enum 
@@ -9,8 +10,15 @@ typedef enum
 /* The result of the packet check after receiving */
 typedef enum
 {
-    BENCHMARK_RECEIVE_CHECK_PASS = 0,
-    BENCHMARK_RECEIVE_CHECK_FAIL
+    BENCHMARK_PACKET_CHECK_PASS = 0,
+    BENCHMARK_PACKET_CHECK_FAIL,
+    BENCHMARK_PACKET_CHECK_PASS_FINISH
+} BenchmarkPacketCheckResult_t;
+/* The result of the receive test case */
+typedef enum
+{
+    BENCHMARK_RECEIVE_PASS = 0,
+    BENCHMARK_RECEIVE_FAIL
 } BenchmarkReceiveResult_t;
 
 typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
@@ -23,17 +31,23 @@ private:
     std::string mTestCaseName;
     unsigned int mPacketSize;
     unsigned int mNumberOfPacket;
+    unsigned int mExpectedNoOfPacket; //For receiving
     unsigned int mPacketDelay;
     unsigned char * pDataPointer;
     static sendFuncPtr_t pSendFunction;
     static delayFuncPtr_t pDelayFunction;
+    BenchmarkSendResult_t mSendResult;
+    BenchmarkReceiveResult_t mReceiveResult;
 public:
     BenchmarkTestCase(std::string testCaseName, unsigned int packetSize, 
                         unsigned int numberOfPacket, unsigned int packetDelay, 
                         unsigned char * dataPointer);
     BenchmarkSendResult_t runSend();
+    BenchmarkPacketCheckResult_t checkReceivedPacket(unsigned char * pBuffer, unsigned int length);
     static void setSendFunction(sendFuncPtr_t sendFunction);
     static void setDelayFunction(delayFuncPtr_t delayFunction);
+    void printSendResult();
+    void printReceiveResult();
     virtual ~BenchmarkTestCase()
     {}
 };
