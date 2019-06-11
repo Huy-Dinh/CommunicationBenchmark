@@ -45,7 +45,7 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
             mSendResult = BENCHMARK_SEND_FAIL;
             return BENCHMARK_SEND_FAIL;
         }
-
+        //std::cout << "SEND" << std::endl;
         endTime = (*pGetTickFunction)();
         elapsedTime = endTime - startTime;
         if (elapsedTime < mPacketDelay)

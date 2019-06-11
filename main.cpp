@@ -1,10 +1,11 @@
 #include "BenchmarkTestCase.h"
+#include "BenchmarkSender.h"
 #include <windows.h>
 #include <stdio.h>
 
 unsigned char testBuffer[1000];
 
-BenchmarkTestCase myTestCase("My Test case 1", 1000, 10, 1000000, testBuffer);
+BenchmarkTestCase myTestCase("My Test case 1", 1000, 10, 1000, testBuffer);
 BenchmarkTestCase yourTestCase("My Test case 2", 50, 100, 10, testBuffer);
 
 void mock_receive_callback(unsigned char* pBuffer, unsigned int size)
@@ -47,10 +48,7 @@ void mock_delay_function(unsigned long delayTime)
 int main()
 {
     getFrequency();
-    BenchmarkTestCase::setSendFunction(&mySendFunction);
-    BenchmarkTestCase::setDelayFunction(&mock_delay_function);
-    BenchmarkTestCase::setGetTickFunction(&getMicroseconds);
-    myTestCase.runSend();
-    myTestCase.printSendResult();
+    BenchmarkSender mySender(&myTestCase, 1, &mySendFunction, &mock_delay_function, &getMicroseconds);
+    mySender.runSend();
 }
 

@@ -11,6 +11,7 @@
                 "-o",
                 "debug\\main",
                 "src\\BenchmarkTestCase.cpp",
+                "src\\BenchmarkSender.cpp",
                 "main.cpp"
             ],
             "group": {
