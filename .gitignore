@@ -2,3 +2,4 @@
 *.ipch
 
 *.bin
+debug/
