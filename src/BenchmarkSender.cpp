@@ -1,13 +1,14 @@
 #include "BenchmarkSender.h"
 
 BenchmarkSender::BenchmarkSender(BenchmarkTestCase* testCases, unsigned int numberOfTestCase, sendFuncPtr_t sendFunction,
-                                    delayFuncPtr_t delayFunction, getTickFuncPtr_t getTickFunction)
+                                    delayFuncPtr_t delayFunction, getTickFuncPtr_t getTickFunction, unsigned long delayBetweenTestCases)
 {
     mTestCases = testCases;
     mNumberOfTestCases = numberOfTestCase;
     pSendFunction = sendFunction;
     pDelayFunction = delayFunction;
     pGetTickFunction = getTickFunction;
+    mDelayBetweenTestCases = delayBetweenTestCases;
 }
 
 void BenchmarkSender::runSend()

@@ -15,7 +15,7 @@ private:
     getTickFuncPtr_t pGetTickFunction;
 public:
     BenchmarkSender(BenchmarkTestCase* testCases, unsigned int numberOfTestCase, sendFuncPtr_t sendFunction,
-                    delayFuncPtr_t delayFunction, getTickFuncPtr_t getTickFunction);
+                    delayFuncPtr_t delayFunction, getTickFuncPtr_t getTickFunction, unsigned long delayBetweenTestCases);
     void runSend();
 };
 
