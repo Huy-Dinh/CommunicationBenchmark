@@ -36,7 +36,7 @@ void BenchmarkSender::runSend()
         mTestCases[i].printSendResult();
 
         /* Send ending control word */
-        controlWord[0] = BENCHMARK_CTRL_END_CASE;
+        controlWord[0] = (unsigned char) BENCHMARK_CTRL_END_CASE;
         (*pSendFunction)(controlWord, 2);
 
         (*pDelayFunction)(mDelayBetweenTestCases);
