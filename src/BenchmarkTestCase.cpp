@@ -24,18 +24,18 @@ BenchmarkTestCase::BenchmarkTestCase(std::string testCaseName, unsigned int pack
 BenchmarkSendResult_t BenchmarkTestCase::runSend()
 {
     /* returns fail if the callbacks are not registered
-        because all are needed for the sending operation to work
-        or if the sending buffer pointer is not assigned to a 
-        valid buffer */   
+        or the sending buffer pointer is not assigned to a valid buffer 
+        or the length of the packet is 0*/   
     if (pSendFunction == nullptr || pDelayFunction == nullptr 
-        || pGetTickFunction == nullptr || pDataBuffer == nullptr)
+        || pGetTickFunction == nullptr || pDataBuffer == nullptr
+        || mNumberOfPacket == 0)
     {
         mSendResult = BENCHMARK_SEND_FAIL;
         return BENCHMARK_SEND_FAIL;
     }
 
     unsigned long startTime, endTime, elapsedTime;
-    for (unsigned int i = 0; i < mNumberOfPacket; ++i)
+    for (unsigned int i = 0; i < mNumberOfPacket - 1; ++i)
     {
         startTime = (*pGetTickFunction)();
 
@@ -53,6 +53,12 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
             /* Wait to send the next packet */
             (*pDelayFunction)(mPacketDelay - elapsedTime);
         }
+    }
+    /* Send the last packet without a delay */
+    if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
+    {
+        mSendResult = BENCHMARK_SEND_FAIL;
+        return BENCHMARK_SEND_FAIL;
     }
     /* If we reach here it's assumed that every packets have been put into 
         the buffer successfully */
