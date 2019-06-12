@@ -10,6 +10,7 @@ typedef enum
     BENCHMARK_SEND_PASS = 0,
     BENCHMARK_SEND_FAIL
 } BenchmarkSendResult_t;
+
 /* The result of the packet check after receiving */
 typedef enum
 {
@@ -17,12 +18,20 @@ typedef enum
     BENCHMARK_PACKET_CHECK_FAIL,
     BENCHMARK_PACKET_CHECK_PASS_FINISH
 } BenchmarkPacketCheckResult_t;
+
 /* The result of the receive test case */
 typedef enum
 {
     BENCHMARK_RECEIVE_PASS = 0,
     BENCHMARK_RECEIVE_FAIL
 } BenchmarkReceiveResult_t;
+
+/* Control message starting bytes */
+typedef enum
+{
+    BENCHMARK_CTRL_START_CASE = 123,
+    BENCHMARK_CTRL_END_CASE
+} BenchmarkControlByte_t;
 
 typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
 typedef void (*delayFuncPtr_t)(unsigned long);

@@ -26,8 +26,18 @@ void BenchmarkSender::runSend()
     /* Loop through the array and run every test case entry */
     for (unsigned int i = 0; i < mNumberOfTestCases; ++i)
     {
+        /* Send starting control word */
+        unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, (unsigned char) i};
+        (*pSendFunction)(controlWord, 2);
+
+        /* Send benchmark payloads */
         mTestCases[i].runSend();
         mTestCases[i].printSendResult();
+
+        /* Send ending control word */
+        controlWord[0] = BENCHMARK_CTRL_END_CASE;
+        (*pSendFunction)(controlWord, 2);
+
         (*pDelayFunction)(mDelayBetweenTestCases);
     }
 }

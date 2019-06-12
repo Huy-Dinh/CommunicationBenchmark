@@ -12,6 +12,7 @@
                 "debug\\main",
                 "src\\BenchmarkTestCase.cpp",
                 "src\\BenchmarkSender.cpp",
+                "src\\BenchmarkReceiver.cpp",
                 "main.cpp"
             ],
             "group": {
