@@ -30,7 +30,15 @@ typedef enum
 typedef enum
 {
     BENCHMARK_RECEIVE_PASS = 0,
+    BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS,
     BENCHMARK_RECEIVE_FAIL
+} BenchmarkReceiveVerdict_t;
+
+typedef struct
+{
+    BenchmarkReceiveVerdict_t verdict;
+    unsigned int noOfReceivedPackets;
+    unsigned int noOfWrongPackets;
 } BenchmarkReceiveResult_t;
 
 /* Control message starting bytes */
@@ -50,7 +58,6 @@ private:
     std::string mTestCaseName;
     unsigned int mPacketSize;
     unsigned int mNumberOfPacket;
-    unsigned int mExpectedNoOfPacket; //For receiving
     unsigned int mPacketDelay;
     unsigned char * pDataBuffer;
 

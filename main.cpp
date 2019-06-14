@@ -9,10 +9,18 @@ unsigned char testBuffer[1000];
 #define NUMBER_OF_TESTCASES 3
 BenchmarkTestCase testCases[NUMBER_OF_TESTCASES] =
 {
-    BenchmarkTestCase("My Test case 1", 1000, 3, 0, testBuffer),
-    BenchmarkTestCase("My Test case 2", 1000, 100, 0, testBuffer),
-    BenchmarkTestCase("My Test case 3", 10, 1000, 0, testBuffer)
+    BenchmarkTestCase("My Test case 1", 1, 100000, 10, testBuffer),
+    BenchmarkTestCase("My Test case 2", 100, 100000, 10, testBuffer),
+    BenchmarkTestCase("My Test case 3", 1000, 100000, 10, testBuffer)
 };
+
+BenchmarkTestCase sendTestCases[NUMBER_OF_TESTCASES] =
+{
+    BenchmarkTestCase("My Test case 1", 1, 50, 10, testBuffer),
+    BenchmarkTestCase("My Test case 2", 100, 100000, 10, testBuffer),
+    BenchmarkTestCase("My Test case 3", 1000, 100000, 10, testBuffer)
+};
+
 
 BenchmarkReceiver myReceiver(testCases, NUMBER_OF_TESTCASES);
 
@@ -53,7 +61,7 @@ void mock_delay_function(unsigned long delayTime)
 int main()
 {
     getFrequency();
-    BenchmarkSender mySender(testCases, NUMBER_OF_TESTCASES, &mySendFunction, &mock_delay_function, &getMicroseconds, 2000000);
+    BenchmarkSender mySender(sendTestCases, NUMBER_OF_TESTCASES, &mySendFunction, &mock_delay_function, &getMicroseconds, 2000000);
     mySender.runSend();
 }
 

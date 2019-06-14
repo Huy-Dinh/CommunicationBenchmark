@@ -14,12 +14,13 @@ BenchmarkTestCase::BenchmarkTestCase(std::string testCaseName, unsigned int pack
     mTestCaseName = testCaseName;
     mPacketSize = packetSize;
     mNumberOfPacket = numberOfPacket;
-    mExpectedNoOfPacket = mNumberOfPacket;
     mPacketDelay = packetDelay;
     pDataBuffer = dataPointer;
     mSendResult.verdict = BENCHMARK_SEND_FAIL;
     mSendResult.noOfMissedDeadlines = 0;
-    mReceiveResult = BENCHMARK_RECEIVE_FAIL;
+    mReceiveResult.verdict = BENCHMARK_RECEIVE_FAIL;
+    mReceiveResult.noOfReceivedPackets = 0;
+    mReceiveResult.noOfWrongPackets = 0;
 }
 
 BenchmarkSendResult_t BenchmarkTestCase::runSend()
@@ -85,17 +86,19 @@ BenchmarkPacketCheckResult_t BenchmarkTestCase::checkReceivedPacket(unsigned cha
         it's a fail */
     if (length != mPacketSize)
     {
+        ++mReceiveResult.noOfWrongPackets;
         return BENCHMARK_PACKET_CHECK_FAIL;
     }
     /* compare the received buffer */
     if (memcmp(pBuffer, pDataBuffer, mPacketSize) != 0)
     {
+        ++mReceiveResult.noOfWrongPackets;
         return BENCHMARK_PACKET_CHECK_FAIL;
     }
     /* if all the packets have been received correctly, the test case passed */
-    if (--mExpectedNoOfPacket == 0)
+    if (++mReceiveResult.noOfReceivedPackets == mNumberOfPacket)
     {
-        mReceiveResult = BENCHMARK_RECEIVE_PASS;
+        mReceiveResult.verdict = (mReceiveResult.noOfWrongPackets == 0) ? BENCHMARK_RECEIVE_PASS : BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS;
         return BENCHMARK_PACKET_CHECK_PASS_FINISH;
     }
     return BENCHMARK_PACKET_CHECK_PASS;
@@ -122,15 +125,22 @@ void BenchmarkTestCase::printReceiveResult()
 #ifdef STDOUT_RESULT
     std::cout << "Test case: " << mTestCaseName;
     std::cout << " receive result: ";
-    if (mReceiveResult == BENCHMARK_RECEIVE_PASS)
+    if (mReceiveResult.verdict == BENCHMARK_RECEIVE_PASS)
     {
         std::cout << "PASSED";
+    }
+    else if (mReceiveResult.verdict == BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS)
+    {
+        std::cout << "PASSED with wrong packets";
     }
     else
     {
         std::cout << "FAILED";
     }
     std::cout << std::endl;
+    std::cout << "   Expected " << mNumberOfPacket << " packets" << std::endl;;
+    std::cout << "   Received " << mReceiveResult.noOfReceivedPackets << " packets" << std::endl;;
+    std::cout << "   Received " << mReceiveResult.noOfWrongPackets << " wrong packets" << std::endl;
 #endif 
 }
 void BenchmarkTestCase::printSendResult()
