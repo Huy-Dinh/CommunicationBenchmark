@@ -1,5 +1,11 @@
+#ifndef BENCHMARKCONFIG_H_
+#define BENCHMARKCONFIG_H_
+
 #ifndef nullptr
     #define nullptr NULL
 #endif
 
-#define STDOUT_RESULT // Allows results to be printed through the standard io
+/* If you are using other print function, route benchmarkPrint to it */
+#define benchmarkPrint(...) printf(__VA_ARGS__)
+
+#endif

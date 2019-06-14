@@ -15,6 +15,7 @@ typedef enum
 typedef struct 
 {
     BenchmarkSendVerdict_t verdict;
+    unsigned int noOfPacketsSent;
     unsigned int noOfMissedDeadlines;
 } BenchmarkSendResult_t;
 

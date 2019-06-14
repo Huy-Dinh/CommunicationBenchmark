@@ -16,8 +16,11 @@ BenchmarkTestCase::BenchmarkTestCase(std::string testCaseName, unsigned int pack
     mNumberOfPacket = numberOfPacket;
     mPacketDelay = packetDelay;
     pDataBuffer = dataPointer;
+
     mSendResult.verdict = BENCHMARK_SEND_FAIL;
+    mSendResult.noOfPacketsSent = 0;
     mSendResult.noOfMissedDeadlines = 0;
+
     mReceiveResult.verdict = BENCHMARK_RECEIVE_FAIL;
     mReceiveResult.noOfReceivedPackets = 0;
     mReceiveResult.noOfWrongPackets = 0;
@@ -47,7 +50,9 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
             mSendResult.verdict = BENCHMARK_SEND_FAIL;
             return mSendResult;
         }
-        //std::cout << "SEND" << std::endl;
+
+        ++mSendResult.noOfPacketsSent;
+
         endTime = (*pGetTickFunction)();
         elapsedTime = endTime - startTime;
         /* If it met the deadline */
@@ -69,6 +74,7 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
         mSendResult.verdict = BENCHMARK_SEND_FAIL;
         return mSendResult;
     }
+    ++mSendResult.noOfPacketsSent;
     /* If we reach here it's assumed that every packets have been put into 
         the buffer successfully, only the number of missed deadlines need to be checked */
     mSendResult.verdict = (mSendResult.noOfMissedDeadlines == 0) ? BENCHMARK_SEND_PASS : BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES;
@@ -122,44 +128,45 @@ void BenchmarkTestCase::setGetTickFunction(getTickFuncPtr_t getTickFunction)
 
 void BenchmarkTestCase::printReceiveResult()
 {
-#ifdef STDOUT_RESULT
-    std::cout << "Test case: " << mTestCaseName;
-    std::cout << " receive result: ";
-    if (mReceiveResult.verdict == BENCHMARK_RECEIVE_PASS)
+    benchmarkPrint("BENCHMARK test case \"%s\" RECEIVE result: ", mTestCaseName.c_str());
+    switch (mReceiveResult.verdict)
     {
-        std::cout << "PASSED";
+        case BENCHMARK_RECEIVE_PASS:
+            benchmarkPrint("PASSED");
+            break;
+        case BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS:
+            benchmarkPrint("PASSED with wrong packets");
+        break;
+            case BENCHMARK_RECEIVE_FAIL:
+            benchmarkPrint("FAILED");
+            break;
+        default:
+            break;
     }
-    else if (mReceiveResult.verdict == BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS)
-    {
-        std::cout << "PASSED with wrong packets";
-    }
-    else
-    {
-        std::cout << "FAILED";
-    }
-    std::cout << std::endl;
-    std::cout << "   Expected " << mNumberOfPacket << " packets" << std::endl;;
-    std::cout << "   Received " << mReceiveResult.noOfReceivedPackets << " packets" << std::endl;;
-    std::cout << "   Received " << mReceiveResult.noOfWrongPackets << " wrong packets" << std::endl;
-#endif 
+    benchmarkPrint("\n");
+    benchmarkPrint("   Expected %u packets\n", mNumberOfPacket);
+    benchmarkPrint("   Received %u correct packets\n", mReceiveResult.noOfReceivedPackets);
+    benchmarkPrint("   Expected %u wrong packets\n", mReceiveResult.noOfWrongPackets);
 }
 void BenchmarkTestCase::printSendResult()
 {
-#ifdef STDOUT_RESULT
-    std::cout << "Test case: " << mTestCaseName;
-    std::cout << " send result: ";
-    if (mSendResult.verdict == BENCHMARK_SEND_PASS)
+    benchmarkPrint("BENCHMARK test case \"%s\" SEND result: ", mTestCaseName.c_str());
+    switch (mSendResult.verdict)
     {
-        std::cout << "PASSED";
+        case BENCHMARK_SEND_PASS:
+            benchmarkPrint("PASSED");
+            break;
+        case BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES:
+            benchmarkPrint("PASSED with missed deadline(s)");
+            break;
+        case BENCHMARK_SEND_FAIL:
+            benchmarkPrint("FAILED");
+            break;      
+        default:
+            break;
     }
-    else if (mSendResult.verdict == BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES)
-    {
-        std::cout << "PASSED with " << mSendResult.noOfMissedDeadlines << " missed deadlines";
-    }
-    else
-    {
-        std::cout << "FAILED";
-    }
-    std::cout << std::endl;
-#endif 
+    benchmarkPrint("\n");
+    benchmarkPrint("   Tried to send %u packets\n", mNumberOfPacket);
+    benchmarkPrint("   Sent %u packets\n", mSendResult.noOfPacketsSent);
+    benchmarkPrint("   Missed %u deadlines\n", mSendResult.noOfMissedDeadlines);
 }
