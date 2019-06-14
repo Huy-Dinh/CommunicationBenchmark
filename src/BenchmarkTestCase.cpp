@@ -17,7 +17,8 @@ BenchmarkTestCase::BenchmarkTestCase(std::string testCaseName, unsigned int pack
     mExpectedNoOfPacket = mNumberOfPacket;
     mPacketDelay = packetDelay;
     pDataBuffer = dataPointer;
-    mSendResult = BENCHMARK_SEND_FAIL;
+    mSendResult.verdict = BENCHMARK_SEND_FAIL;
+    mSendResult.noOfMissedDeadlines = 0;
     mReceiveResult = BENCHMARK_RECEIVE_FAIL;
 }
 
@@ -30,8 +31,8 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
         || pGetTickFunction == nullptr || pDataBuffer == nullptr
         || mNumberOfPacket == 0)
     {
-        mSendResult = BENCHMARK_SEND_FAIL;
-        return BENCHMARK_SEND_FAIL;
+        mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        return mSendResult;
     }
 
     unsigned long startTime, endTime, elapsedTime;
@@ -42,28 +43,35 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
         /* If an attempt to send fails, the sending test fails */
         if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
         {
-            mSendResult = BENCHMARK_SEND_FAIL;
-            return BENCHMARK_SEND_FAIL;
+            mSendResult.verdict = BENCHMARK_SEND_FAIL;
+            return mSendResult;
         }
         //std::cout << "SEND" << std::endl;
         endTime = (*pGetTickFunction)();
         elapsedTime = endTime - startTime;
-        if (elapsedTime < mPacketDelay)
+        /* If it met the deadline */
+        if (elapsedTime <= mPacketDelay)
         {
             /* Wait to send the next packet */
             (*pDelayFunction)(mPacketDelay - elapsedTime);
         }
+        else
+        {
+            /* Increase the dealine counter since a deadline was missed */
+            ++(mSendResult.noOfMissedDeadlines);
+        }
+        
     }
     /* Send the last packet without a delay */
     if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
     {
-        mSendResult = BENCHMARK_SEND_FAIL;
-        return BENCHMARK_SEND_FAIL;
+        mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        return mSendResult;
     }
     /* If we reach here it's assumed that every packets have been put into 
-        the buffer successfully */
-    mSendResult = BENCHMARK_SEND_PASS;
-    return BENCHMARK_SEND_PASS;
+        the buffer successfully, only the number of missed deadlines need to be checked */
+    mSendResult.verdict = (mSendResult.noOfMissedDeadlines == 0) ? BENCHMARK_SEND_PASS : BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES;
+    return mSendResult;
 }
 
 BenchmarkPacketCheckResult_t BenchmarkTestCase::checkReceivedPacket(unsigned char * pBuffer, unsigned int length)
@@ -130,9 +138,13 @@ void BenchmarkTestCase::printSendResult()
 #ifdef STDOUT_RESULT
     std::cout << "Test case: " << mTestCaseName;
     std::cout << " send result: ";
-    if (mSendResult == BENCHMARK_SEND_PASS)
+    if (mSendResult.verdict == BENCHMARK_SEND_PASS)
     {
         std::cout << "PASSED";
+    }
+    else if (mSendResult.verdict == BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES)
+    {
+        std::cout << "PASSED with " << mSendResult.noOfMissedDeadlines << " missed deadlines";
     }
     else
     {

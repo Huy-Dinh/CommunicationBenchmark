@@ -5,10 +5,17 @@
 #include "BenchmarkConfig.h"
 
 /* The result of the sending attempt */
-typedef enum 
+typedef enum
 {
     BENCHMARK_SEND_PASS = 0,
+    BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES,
     BENCHMARK_SEND_FAIL
+} BenchmarkSendVerdict_t;
+
+typedef struct 
+{
+    BenchmarkSendVerdict_t verdict;
+    unsigned int noOfMissedDeadlines;
 } BenchmarkSendResult_t;
 
 /* The result of the packet check after receiving */
@@ -33,7 +40,7 @@ typedef enum
     BENCHMARK_CTRL_END_CASE
 } BenchmarkControlByte_t;
 
-typedef BenchmarkSendResult_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
+typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
 typedef void (*delayFuncPtr_t)(unsigned long);
 typedef unsigned long (*getTickFuncPtr_t)();
 
