@@ -135,8 +135,8 @@ void BenchmarkTestCase::printReceiveResult()
             break;
         case BENCHMARK_RECEIVE_PASS_WITH_WRONG_PACKETS:
             benchmarkPrint("PASSED with wrong packets");
-        break;
-            case BENCHMARK_RECEIVE_FAIL:
+            break;
+        case BENCHMARK_RECEIVE_FAIL:
             benchmarkPrint("FAILED");
             break;
         default:
