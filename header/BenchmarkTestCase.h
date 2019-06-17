@@ -49,6 +49,7 @@ typedef enum
     BENCHMARK_CTRL_END_CASE
 } BenchmarkControlByte_t;
 
+/* Callback function pointer declarations */
 typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
 typedef void (*delayFuncPtr_t)(BenchmarkTime_t);
 typedef BenchmarkTime_t (*getTickFuncPtr_t)();

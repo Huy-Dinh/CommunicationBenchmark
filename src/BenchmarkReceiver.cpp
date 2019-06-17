@@ -64,5 +64,7 @@ void BenchmarkReceiver::runStateMachine(BenchmarkReceiverEvent_t evt, unsigned c
                 }
             }
             break;
+        default:
+            break;
     }
 }

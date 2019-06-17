@@ -50,7 +50,7 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
             mSendResult.verdict = BENCHMARK_SEND_FAIL;
             return mSendResult;
         }
-
+        /* Increase the counter for successfully sent bytes */
         ++mSendResult.noOfPacketsSent;
 
         endTime = (*pGetTickFunction)();
@@ -63,10 +63,9 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
         }
         else
         {
-            /* Increase the dealine counter since a deadline was missed */
+            /* Increase the missed deadline counter since a deadline was missed */
             ++(mSendResult.noOfMissedDeadlines);
         }
-        
     }
     /* Send the last packet without a delay */
     if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
