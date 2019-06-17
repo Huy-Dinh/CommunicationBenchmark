@@ -124,7 +124,6 @@ void BenchmarkTestCase::setGetTickFunction(getTickFuncPtr_t getTickFunction)
     pGetTickFunction = getTickFunction;
 }
 
-
 void BenchmarkTestCase::printReceiveResult()
 {
     benchmarkPrint("BENCHMARK test case \"%s\" RECEIVE result: ", mTestCaseName.c_str());
@@ -147,6 +146,7 @@ void BenchmarkTestCase::printReceiveResult()
     benchmarkPrint("   Received %u correct packets\n", mReceiveResult.noOfReceivedPackets);
     benchmarkPrint("   Received %u wrong packets\n", mReceiveResult.noOfWrongPackets);
 }
+
 void BenchmarkTestCase::printSendResult()
 {
     benchmarkPrint("BENCHMARK test case \"%s\" SEND result: ", mTestCaseName.c_str());
