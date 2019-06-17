@@ -145,7 +145,7 @@ void BenchmarkTestCase::printReceiveResult()
     benchmarkPrint("\n");
     benchmarkPrint("   Expected %u packets\n", mNumberOfPacket);
     benchmarkPrint("   Received %u correct packets\n", mReceiveResult.noOfReceivedPackets);
-    benchmarkPrint("   Expected %u wrong packets\n", mReceiveResult.noOfWrongPackets);
+    benchmarkPrint("   Received %u wrong packets\n", mReceiveResult.noOfWrongPackets);
 }
 void BenchmarkTestCase::printSendResult()
 {
