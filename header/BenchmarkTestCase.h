@@ -50,8 +50,8 @@ typedef enum
 } BenchmarkControlByte_t;
 
 typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
-typedef void (*delayFuncPtr_t)(unsigned long);
-typedef unsigned long (*getTickFuncPtr_t)();
+typedef void (*delayFuncPtr_t)(BenchmarkTime_t);
+typedef BenchmarkTime_t (*getTickFuncPtr_t)();
 
 class BenchmarkTestCase
 {
