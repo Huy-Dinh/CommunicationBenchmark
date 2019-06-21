@@ -2,7 +2,6 @@
 #include "BenchmarkSender.h"
 #include "BenchmarkReceiver.h"
 #include <windows.h>
-#include <stdio.h>
 
 unsigned char testBuffer[1000];
 

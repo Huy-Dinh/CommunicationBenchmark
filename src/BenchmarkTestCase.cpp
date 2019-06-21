@@ -1,6 +1,4 @@
 #include "BenchmarkTestCase.h"
-#include <string.h>
-#include <stdio.h>
 
 /* the send function pointer defaults to  */
 sendFuncPtr_t BenchmarkTestCase::pSendFunction = nullptr;
