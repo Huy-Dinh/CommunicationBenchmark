@@ -23,6 +23,10 @@
         "typeinfo": "cpp",
         "chrono": "cpp",
         "ctime": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "wrappedsender.h": "c",
+        "benchmarksender.h": "c",
+        "benchmarkconfig.h": "c",
+        "benchmarktestcase.h": "c"
     }
 }

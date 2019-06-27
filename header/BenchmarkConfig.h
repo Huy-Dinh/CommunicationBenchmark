@@ -1,6 +1,10 @@
 #ifndef BENCHMARKCONFIG_H_
 #define BENCHMARKCONFIG_H_
 
+#ifndef NULL
+    #define NULL 0
+#endif
+
 #ifndef nullptr
     #define nullptr NULL
 #endif
