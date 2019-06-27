@@ -5,7 +5,7 @@ sendFuncPtr_t BenchmarkTestCase::pSendFunction = nullptr;
 delayFuncPtr_t BenchmarkTestCase::pDelayFunction = nullptr;
 getTickFuncPtr_t BenchmarkTestCase::pGetTickFunction = nullptr;
 
-BenchmarkTestCase::BenchmarkTestCase(std::string testCaseName, unsigned int packetSize, 
+BenchmarkTestCase::BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
                         unsigned int numberOfPacket, unsigned int packetDelay, 
                         unsigned char * dataPointer)
 {
@@ -124,7 +124,7 @@ void BenchmarkTestCase::setGetTickFunction(getTickFuncPtr_t getTickFunction)
 
 void BenchmarkTestCase::printReceiveResult()
 {
-    benchmarkPrint("BENCHMARK test case \"%s\" RECEIVE result: ", mTestCaseName.c_str());
+    benchmarkPrint("BENCHMARK test case \"%s\" RECEIVE result: ", mTestCaseName);
     switch (mReceiveResult.verdict)
     {
         case BENCHMARK_RECEIVE_PASS:
@@ -147,7 +147,7 @@ void BenchmarkTestCase::printReceiveResult()
 
 void BenchmarkTestCase::printSendResult()
 {
-    benchmarkPrint("BENCHMARK test case \"%s\" SEND result: ", mTestCaseName.c_str());
+    benchmarkPrint("BENCHMARK test case \"%s\" SEND result: ", mTestCaseName);
     switch (mSendResult.verdict)
     {
         case BENCHMARK_SEND_PASS:

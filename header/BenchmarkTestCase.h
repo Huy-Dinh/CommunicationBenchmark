@@ -57,7 +57,7 @@ typedef BenchmarkTime_t (*getTickFuncPtr_t)();
 class BenchmarkTestCase
 {
 private:
-    std::string mTestCaseName;
+    char* mTestCaseName;
     unsigned int mPacketSize;
     unsigned int mNumberOfPacket;
     unsigned int mPacketDelay;
@@ -70,7 +70,7 @@ private:
     BenchmarkSendResult_t mSendResult;
     BenchmarkReceiveResult_t mReceiveResult;
 public:
-    BenchmarkTestCase(std::string testCaseName, unsigned int packetSize, 
+    BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
                         unsigned int numberOfPacket, unsigned int packetDelay, 
                         unsigned char * dataPointer);
     BenchmarkSendResult_t runSend();

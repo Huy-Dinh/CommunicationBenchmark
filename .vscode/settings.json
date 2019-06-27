@@ -27,6 +27,7 @@
         "wrappedsender.h": "c",
         "benchmarksender.h": "c",
         "benchmarkconfig.h": "c",
-        "benchmarktestcase.h": "c"
+        "benchmarktestcase.h": "c",
+        "cstring": "c"
     }
 }
