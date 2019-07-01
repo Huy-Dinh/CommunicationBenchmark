@@ -7,32 +7,12 @@
             "command": "g++",
             "args": [
                 "-g",
-                "-Iheader",
+                "-Ic_header",
                 "-o",
                 "debug\\main",
-                "src\\BenchmarkTestCase.cpp",
-                "src\\BenchmarkSender.cpp",
-                "src\\BenchmarkReceiver.cpp",
-                "main.cpp"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-        {
-            "label": "build C",
-            "type": "shell",
-            "command": "g++",
-            "args": [
-                "-g",
-                "-Iheader",
-                "-o",
-                "debug\\main",
-                "src\\BenchmarkTestCase.cpp",
-                "src\\BenchmarkSender.cpp",
-                "src\\BenchmarkReceiver.cpp",
-                "src\\wrappedSender.cpp",
+                "c_src\\BenchmarkTestCase.c",
+                "c_src\\BenchmarkSender.c",
+                "c_src\\BenchmarkReceiver.c",
                 "main.c"
             ],
             "group": {

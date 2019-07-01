@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/header",
+                "${workspaceFolder}/c_header",
                 "${workspaceFolder}/**"
             ],
             "defines": [

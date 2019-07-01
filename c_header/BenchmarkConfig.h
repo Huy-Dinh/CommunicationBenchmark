@@ -1,11 +1,32 @@
-#ifndef BENCHMARKTESTCASE_H
-#define BENCHMARKTESTCASE_H
+#ifndef BENCHMARKCONFIG_H_
+#define BENCHMARKCONFIG_H_
 
-#include <iostream>
-#include "BenchmarkConfig.h"
+#include <stdio.h> 
+
+#ifndef NULL
+    #define NULL 0
+#endif
+
+#ifndef nullptr
+    #define nullptr NULL
+#endif
+
+/* Printing configuration */
+#define BENCHMARK_ENABLE_PRINT      1
+#define BENCHMARK_PRINT_FUNCTION    printf // Route to other print function if necessary
+
+/* The datatype used for time */
+typedef unsigned long BenchmarkTime_t;
+
+#if BENCHMARK_ENABLE_PRINT
+    #define benchmarkPrint(...) BENCHMARK_PRINT_FUNCTION(__VA_ARGS__)
+#else
+    #define benchmarkPrint(...)
+#endif
+
 
 /* The result of the sending attempt */
-typedef enum
+typedef enum 
 {
     BENCHMARK_SEND_PASS = 0,
     BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES,
@@ -53,35 +74,5 @@ typedef enum
 typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
 typedef void (*delayFuncPtr_t)(BenchmarkTime_t);
 typedef BenchmarkTime_t (*getTickFuncPtr_t)();
-
-class BenchmarkTestCase
-{
-private:
-    char* mTestCaseName;
-    unsigned int mPacketSize;
-    unsigned int mNumberOfPacket;
-    unsigned int mPacketDelay;
-    unsigned char * pDataBuffer;
-
-    static sendFuncPtr_t pSendFunction;
-    static delayFuncPtr_t pDelayFunction;
-    static getTickFuncPtr_t pGetTickFunction;
-
-    BenchmarkSendResult_t mSendResult;
-    BenchmarkReceiveResult_t mReceiveResult;
-public:
-    BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
-                        unsigned int numberOfPacket, unsigned int packetDelay, 
-                        unsigned char * dataPointer);
-    BenchmarkSendResult_t runSend();
-    BenchmarkPacketCheckResult_t checkReceivedPacket(unsigned char * pBuffer, unsigned int length);
-    static void setSendFunction(sendFuncPtr_t sendFunction);
-    static void setDelayFunction(delayFuncPtr_t delayFunction);
-    static void setGetTickFunction(getTickFuncPtr_t getTickFunction);
-    void printSendResult();
-    void printReceiveResult();
-    virtual ~BenchmarkTestCase()
-    {}
-};
 
 #endif
