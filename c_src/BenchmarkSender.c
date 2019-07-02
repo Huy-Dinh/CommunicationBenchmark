@@ -5,23 +5,23 @@ void runSend(BenchmarkSender_t* pSender)
     /* Check preconditions, no need to check send and getTick because they are
     already checked inside the test case */
     if (pSender->mTestCases == nullptr) return;
-    if (pSender->pDelayFunction == nullptr) return;
 
-    /* Loop through the array and run every test case entry */
-    for (unsigned int i = 0; i < pSender->mNumberOfTestCases; ++i)
+    if (pSender->mCurrentTestCase < pSender->mNumberOfTestCases)
     {
-        /* Send starting control word */
-        unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, (unsigned char) i};
-        (*pSender->pSendFunction)(controlWord, 2);
+        if (pSender->mTestCases[pSender->mCurrentTestCase].mSendResult.noOfPacketsSent == 0)
+        {
+            unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, pSender->mCurrentTestCase};
+            (*pSender->pSendFunction)(controlWord, 2);
+        }
+        BenchmarkSendResult_t sendResult = runSendPacket(&(pSender->mTestCases[pSender->mCurrentTestCase]), 
+                                                        pSender->pSendFunction, pSender->pGetTickFunction);
+        if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
+        {
+            unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, pSender->mCurrentTestCase};
+            (*pSender->pSendFunction)(controlWord, 2);
 
-        /* Send benchmark payloads */
-        runSendPacket(&(pSender->mTestCases[i]), pSender->pSendFunction, pSender->pDelayFunction, pSender->pGetTickFunction);
-        printSendResult(&(pSender->mTestCases[i]));
-
-        /* Send ending control word */
-        controlWord[0] = (unsigned char) BENCHMARK_CTRL_END_CASE;
-        (*pSender->pSendFunction)(controlWord, 2);
-
-        (*pSender->pDelayFunction)(pSender->mDelayBetweenTestCases);
+            printSendResult(&(pSender->mTestCases[pSender->mCurrentTestCase]));
+            ++(pSender->mCurrentTestCase);
+        }
     }
 }

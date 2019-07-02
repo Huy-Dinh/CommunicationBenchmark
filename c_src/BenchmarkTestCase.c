@@ -1,57 +1,42 @@
 #include "BenchmarkTestCase.h"
 #include <string.h> // memcpy
 
-BenchmarkSendResult_t runSendPacket(BenchmarkTestCase_t* pTestCase, sendFuncPtr_t pSendFunction, delayFuncPtr_t pDelayFunction, getTickFuncPtr_t pGetTickFunction)
+BenchmarkSendResult_t runSendPacket(BenchmarkTestCase_t* pTestCase, sendFuncPtr_t pSendFunction, getTickFuncPtr_t pGetTickFunction)
 {
-        /* returns fail if the callbacks are not registered
-        or the sending buffer pointer is not assigned to a valid buffer 
-        or the length of the packet is 0*/   
-    if (pSendFunction == nullptr || pDelayFunction == nullptr 
-        || pGetTickFunction == nullptr || pTestCase->pDataBuffer == nullptr
+    /* returns fail if the callbacks are not registered
+    or the sending buffer pointer is not assigned to a valid buffer 
+    or the length of the packet is 0*/   
+    if (pSendFunction == nullptr || pGetTickFunction == nullptr || pTestCase->pDataBuffer == nullptr
         || pTestCase->mNumberOfPacket == 0)
     {
         pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
         return pTestCase->mSendResult;
     }
 
-    unsigned long startTime, endTime, elapsedTime;
-    for (unsigned int i = 0; i <pTestCase-> mNumberOfPacket - 1; ++i)
+    if (pTestCase->mSendResult.verdict == BENCHMARK_SEND_UNDECIDED)
     {
-        startTime = (*pGetTickFunction)();
-
-        /* If an attempt to send fails, the sending test fails */
-        if ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) != BENCHMARK_SEND_PASS)
+        BenchmarkTime_t currentTick = (*pGetTickFunction)();
+        if (currentTick - pTestCase->lastSentTimestamp >= pTestCase->mPacketDelay)
         {
-            pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
-            return pTestCase->mSendResult;
-        }
-        /* Increase the counter for successfully sent bytes */
-        ++(pTestCase->mSendResult.noOfPacketsSent);
-
-        endTime = (*pGetTickFunction)();
-        elapsedTime = endTime - startTime;
-        /* If it met the deadline */
-        if (elapsedTime <= pTestCase->mPacketDelay)
-        {
-            /* Wait to send the next packet */
-            (*pDelayFunction)(pTestCase->mPacketDelay - elapsedTime);
-        }
-        else
-        {
-            /* Increase the missed deadline counter since a deadline was missed */
-            ++(pTestCase->mSendResult.noOfMissedDeadlines);
-        }
+            /* If an attempt to send fails, the sending test fails */
+            if ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) != BENCHMARK_SEND_PASS)
+            {
+                pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
+            }
+            else
+            {
+                /* Update the last sent timestamp */
+                pTestCase->lastSentTimestamp = currentTick;
+                /* Increase the counter for successfully sent bytes */
+                if (++(pTestCase->mSendResult.noOfPacketsSent) == pTestCase->mNumberOfPacket)
+                {
+                    /* If we reach here it's assumed that every packets have been put into 
+                    the buffer successfully, only the number of missed deadlines need to be checked */
+                    pTestCase->mSendResult.verdict = (pTestCase->mSendResult.noOfMissedDeadlines == 0) ? BENCHMARK_SEND_PASS : BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES;
+                }
+           }      
+        }        
     }
-    /* Send the last packet without a delay */
-    if ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) != BENCHMARK_SEND_PASS)
-    {
-        pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
-        return pTestCase->mSendResult;
-    }
-    ++(pTestCase->mSendResult.noOfPacketsSent);
-    /* If we reach here it's assumed that every packets have been put into 
-        the buffer successfully, only the number of missed deadlines need to be checked */
-    pTestCase->mSendResult.verdict = (pTestCase->mSendResult.noOfMissedDeadlines == 0) ? BENCHMARK_SEND_PASS : BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES;
     return pTestCase->mSendResult;
 }
 
@@ -84,7 +69,7 @@ BenchmarkPacketCheckResult_t checkReceivedPacket(BenchmarkTestCase_t* pTestCase,
     return BENCHMARK_PACKET_CHECK_PASS;
 }
 
-void printSendResult(BenchmarkTestCase_t* pTestCase)
+void printReceiveResult(BenchmarkTestCase_t* pTestCase)
 {
     benchmarkPrint("BENCHMARK test case \"%s\" RECEIVE result: ", pTestCase->mTestCaseName);
     switch (pTestCase->mReceiveResult.verdict)
@@ -107,7 +92,7 @@ void printSendResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Received %u wrong packets\n", pTestCase->mReceiveResult.noOfWrongPackets);
 }
 
-void printReceiveResult(BenchmarkTestCase_t* pTestCase)
+void printSendResult(BenchmarkTestCase_t* pTestCase)
 {
     benchmarkPrint("BENCHMARK test case \"%s\" SEND result: ", pTestCase->mTestCaseName);
     switch (pTestCase->mSendResult.verdict)

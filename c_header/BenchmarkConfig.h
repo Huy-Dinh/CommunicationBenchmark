@@ -28,7 +28,8 @@ typedef unsigned long BenchmarkTime_t;
 /* The result of the sending attempt */
 typedef enum 
 {
-    BENCHMARK_SEND_PASS = 0,
+    BENCHMARK_SEND_UNDECIDED,
+    BENCHMARK_SEND_PASS,
     BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES,
     BENCHMARK_SEND_FAIL
 } BenchmarkSendVerdict_t;

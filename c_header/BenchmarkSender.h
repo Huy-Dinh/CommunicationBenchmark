@@ -9,8 +9,8 @@ typedef struct BenchmarkSender
     BenchmarkTestCase_t* mTestCases;
     unsigned int mNumberOfTestCases;
     unsigned long mDelayBetweenTestCases;
+    unsigned int mCurrentTestCase;
     sendFuncPtr_t pSendFunction;
-    delayFuncPtr_t pDelayFunction;
     getTickFuncPtr_t pGetTickFunction;
 } BenchmarkSender_t;
 

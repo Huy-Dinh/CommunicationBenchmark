@@ -8,16 +8,16 @@ unsigned char testBuffer[1000];
 #define NUMBER_OF_TESTCASES 3
 BenchmarkTestCase_t testCases[NUMBER_OF_TESTCASES] =
 {
-    {"My Test case 1", 1, 100000, 10, testBuffer},
-    {"My Test case 2", 100, 100000, 10, testBuffer},
-    {"My Test case 3", 1000, 100000, 10, testBuffer}
+    {"My Test case 1", 1, 100000, 10, testBuffer, 0},
+    {"My Test case 2", 100, 100000, 10, testBuffer, 0},
+    {"My Test case 3", 1000, 100000, 10, testBuffer, 0}
 };
 
 BenchmarkTestCase_t sendTestCases[NUMBER_OF_TESTCASES] =
 {
-    {"My Test case 1", 1, 100000, 10, testBuffer},
-    {"My Test case 2", 100, 100000, 10, testBuffer},
-    {"My Test case 3", 1000, 100000, 10, testBuffer}
+    {"My Test case 1", 1, 100000, 10, testBuffer, 0},
+    {"My Test case 2", 100, 100000, 10, testBuffer, 0},
+    {"My Test case 3", 1000, 100000, 10, testBuffer, 0}
 };
 
 BenchmarkReceiver_t myReceiver;
@@ -51,12 +51,6 @@ unsigned long getMicroseconds()
     return (unsigned long) currentTickCount.QuadPart;
 }
 
-void mock_delay_function(unsigned long delayTime)
-{
-    unsigned long startTime = getMicroseconds();
-    while (getMicroseconds() - startTime < delayTime);
-}
-
 int main()
 {
     getFrequency();
@@ -64,15 +58,16 @@ int main()
     mySender.mTestCases = sendTestCases;
     mySender.mNumberOfTestCases = NUMBER_OF_TESTCASES;
     mySender.pSendFunction = mySendFunction;
-    mySender.pDelayFunction = mock_delay_function;
     mySender.pGetTickFunction = getMicroseconds;
-    
+    mySender.mCurrentTestCase = 0;
 
     myReceiver.mNumberOfTestCases = NUMBER_OF_TESTCASES;
     myReceiver.mTestCases = testCases;
     myReceiver.mCurrentTestCase = 0;
     myReceiver.mState = RECEIVER_STATE_IDLE;
     
-    runSend(&mySender);
+    unsigned long lastTime = getMicroseconds();
+    while (getMicroseconds() - lastTime < 5000000)
+        runSend(&mySender);
 }
 
