@@ -12,6 +12,7 @@ typedef struct BenchmarkSender
     unsigned char mCurrentTestCase;
     sendFuncPtr_t pSendFunction;
     getTickFuncPtr_t pGetTickFunction;
+    unsigned long mLastTestCaseTime;
 } BenchmarkSender_t;
 
 

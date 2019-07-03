@@ -60,6 +60,8 @@ int main()
     mySender.pSendFunction = mySendFunction;
     mySender.pGetTickFunction = getMicroseconds;
     mySender.mCurrentTestCase = 0;
+    mySender.mLastTestCaseTime = 0;
+    mySender.mDelayBetweenTestCases = 3000000;
 
     myReceiver.mNumberOfTestCases = NUMBER_OF_TESTCASES;
     myReceiver.mTestCases = testCases;
@@ -67,7 +69,7 @@ int main()
     myReceiver.mState = RECEIVER_STATE_IDLE;
     
     unsigned long lastTime = getMicroseconds();
-    while (getMicroseconds() - lastTime < 5000000)
+    while (getMicroseconds() - lastTime < 15000000)
         runSend(&mySender);
 }
 
