@@ -25,7 +25,6 @@ typedef struct BenchmarkReceiver
     unsigned int mCurrentTestCase;
     BenchmarkReceiverState_t mState;
     getTickFuncPtr_t pGetTickFunction;
-    BenchmarkTime_t mTimeTaken;
 } BenchmarkReceiver_t;
 
 void benchmarkReceive(BenchmarkReceiver_t* pReceiver, unsigned char * pBuffer, unsigned int size);
