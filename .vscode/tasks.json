@@ -20,25 +20,5 @@
                 "isDefault": true
             }
         }
-        {
-            "label": "build C",
-            "type": "shell",
-            "command": "g++",
-            "args": [
-                "-g",
-                "-Iheader",
-                "-o",
-                "debug\\main",
-                "src\\BenchmarkTestCase.cpp",
-                "src\\BenchmarkSender.cpp",
-                "src\\BenchmarkReceiver.cpp",
-                "src\\wrappedSender.cpp",
-                "main.c"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
     ]
 }
