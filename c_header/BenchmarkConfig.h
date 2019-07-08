@@ -18,6 +18,9 @@
 /* The datatype used for time */
 typedef unsigned long BenchmarkTime_t;
 
+/* Number of failed  */
+#define BENCHMARK_MAX_SEND_FAILURE  30
+
 #if BENCHMARK_ENABLE_PRINT
     #define benchmarkPrint(...) BENCHMARK_PRINT_FUNCTION(__VA_ARGS__)
 #else

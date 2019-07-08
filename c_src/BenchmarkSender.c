@@ -16,13 +16,41 @@ void runSend(BenchmarkSender_t* pSender)
                 unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, pSender->mCurrentTestCase};
                 (*pSender->pSendFunction)(controlWord, 2);
             }
-            BenchmarkSendResult_t sendResult = runSendPacket(&(pSender->mTestCases[pSender->mCurrentTestCase]), 
+            BenchmarkSendResult_t sendResult = runSendTestCase(&(pSender->mTestCases[pSender->mCurrentTestCase]), 
                                                             pSender->pSendFunction, pSender->pGetTickFunction);
             if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
             {
                 unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, pSender->mCurrentTestCase};
                 (*pSender->pSendFunction)(controlWord, 2);
+                printSendResult(&(pSender->mTestCases[pSender->mCurrentTestCase]));
+                ++(pSender->mCurrentTestCase);
+                pSender->mLastTestCaseTime = pSender->pGetTickFunction();
+            }
+        }
+    }
+}
 
+void runThroughputTest(BenchmarkSender_t* pSender)
+{
+    if (pSender->mTestCases == nullptr) return;
+
+    if (pSender->mCurrentTestCase < pSender->mNumberOfTestCases)
+    {
+        if (pSender->pGetTickFunction() - pSender->mLastTestCaseTime > pSender->mDelayBetweenTestCases)
+        {
+            if (pSender->mTestCases[pSender->mCurrentTestCase].mSendResult.noOfPacketsSent == 0)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, pSender->mCurrentTestCase};
+                (*pSender->pSendFunction)(controlWord, 2);
+                pSender->mTestCases[pSender->mCurrentTestCase].timeTaken = pSender->pGetTickFunction();
+            }
+            BenchmarkSendResult_t sendResult = runThroughputTestCase(&(pSender->mTestCases[pSender->mCurrentTestCase]), pSender->pSendFunction);
+            if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, pSender->mCurrentTestCase};
+                (*pSender->pSendFunction)(controlWord, 2);
+
+                pSender->mTestCases[pSender->mCurrentTestCase].timeTaken = pSender->pGetTickFunction() - pSender->mTestCases[pSender->mCurrentTestCase].timeTaken;
                 printSendResult(&(pSender->mTestCases[pSender->mCurrentTestCase]));
                 ++(pSender->mCurrentTestCase);
                 pSender->mLastTestCaseTime = pSender->pGetTickFunction();

@@ -8,14 +8,14 @@ unsigned char testBuffer[1000];
 #define NUMBER_OF_TESTCASES 3
 BenchmarkTestCase_t testCases[NUMBER_OF_TESTCASES] =
 {
-    {"My Test case 1", 1, 100000, 10, testBuffer, 0},
+    {"My Test case 1", 100, 100000, 10, testBuffer, 0},
     {"My Test case 2", 100, 100000, 10, testBuffer, 0},
     {"My Test case 3", 1000, 100000, 10, testBuffer, 0}
 };
 
 BenchmarkTestCase_t sendTestCases[NUMBER_OF_TESTCASES] =
 {
-    {"My Test case 1", 1, 100000, 10, testBuffer, 0},
+    {"My Test case 1", 100, 100000, 10, testBuffer, 0},
     {"My Test case 2", 100, 100000, 10, testBuffer, 0},
     {"My Test case 3", 1000, 100000, 10, testBuffer, 0}
 };
@@ -61,7 +61,7 @@ int main()
     mySender.pGetTickFunction = getMicroseconds;
     mySender.mCurrentTestCase = 0;
     mySender.mLastTestCaseTime = 0;
-    mySender.mDelayBetweenTestCases = 3000000;
+    mySender.mDelayBetweenTestCases = 1000000;
 
     myReceiver.mNumberOfTestCases = NUMBER_OF_TESTCASES;
     myReceiver.mTestCases = testCases;
@@ -69,7 +69,7 @@ int main()
     myReceiver.mState = RECEIVER_STATE_IDLE;
     
     unsigned long lastTime = getMicroseconds();
-    while (getMicroseconds() - lastTime < 15000000)
-        runSend(&mySender);
+    while (getMicroseconds() - lastTime < 5000000)
+        runThroughputTest(&mySender);
 }
 

@@ -28,6 +28,7 @@
         "benchmarksender.h": "c",
         "benchmarkconfig.h": "c",
         "benchmarktestcase.h": "c",
-        "cstring": "c"
+        "cstring": "c",
+        "string.h": "c"
     }
 }

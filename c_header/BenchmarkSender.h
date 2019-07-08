@@ -16,6 +16,11 @@ typedef struct BenchmarkSender
 } BenchmarkSender_t;
 
 
+// Run the testcases with the specified interval
+// returns fail when a failure to send is detected (full buffer oder so)
 void runSend(BenchmarkSender_t* pSender);
+
+// Try to send the test packets as fast as possible to work out the throughput
+void runThroughputTest(BenchmarkSender_t* pSender);
 
 #endif

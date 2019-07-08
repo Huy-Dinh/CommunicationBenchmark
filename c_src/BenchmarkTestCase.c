@@ -1,7 +1,7 @@
 #include "BenchmarkTestCase.h"
 #include <string.h> // memcpy
 
-BenchmarkSendResult_t runSendPacket(BenchmarkTestCase_t* pTestCase, sendFuncPtr_t pSendFunction, getTickFuncPtr_t pGetTickFunction)
+BenchmarkSendResult_t runSendTestCase(BenchmarkTestCase_t* pTestCase, sendFuncPtr_t pSendFunction, getTickFuncPtr_t pGetTickFunction)
 {
     /* returns fail if the callbacks are not registered
     or the sending buffer pointer is not assigned to a valid buffer 
@@ -36,6 +36,47 @@ BenchmarkSendResult_t runSendPacket(BenchmarkTestCase_t* pTestCase, sendFuncPtr_
                 }
            }      
         }        
+    }
+    return pTestCase->mSendResult;
+}
+
+BenchmarkSendResult_t runThroughputTestCase(BenchmarkTestCase_t* pTestCase, sendFuncPtr_t pSendFunction)
+{
+    
+    /* returns fail if the callbacks are not registered
+    or the sending buffer pointer is not assigned to a valid buffer 
+    or the length of the packet is 0*/   
+    if (pSendFunction == nullptr ||  pTestCase->pDataBuffer == nullptr
+        || pTestCase->mNumberOfPacket == 0)
+    {
+        pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        return pTestCase->mSendResult;
+    }
+
+    static unsigned int failureCount = 0;
+
+    if (pTestCase->mSendResult.verdict == BENCHMARK_SEND_UNDECIDED)
+    {
+        if ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) != BENCHMARK_SEND_PASS)
+        {
+            /* If the number of send failure surpasses what is specified */
+            if (++failureCount >= BENCHMARK_MAX_SEND_FAILURE)
+            {
+                pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
+            }
+        }
+        else
+        {
+            failureCount = 0;
+            /* Increase the counter for successfully sent bytes */
+            if (++(pTestCase->mSendResult.noOfPacketsSent) >= pTestCase->mNumberOfPacket)
+            {
+                /* If we reach here it's assumed that every packets have been put into 
+                the buffer successfully, only the number of missed deadlines need to be checked */
+                pTestCase->mSendResult.verdict = BENCHMARK_SEND_PASS;
+            }
+        }
+        
     }
     return pTestCase->mSendResult;
 }
@@ -113,5 +154,9 @@ void printSendResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Tried to send %u packets\n", pTestCase->mNumberOfPacket);
     benchmarkPrint("   Sent %u packets\n", pTestCase->mSendResult.noOfPacketsSent);
     benchmarkPrint("   Missed %u deadlines\n", pTestCase->mSendResult.noOfMissedDeadlines);
+    if (pTestCase->timeTaken != 0)
+    {
+        benchmarkPrint("   Time taken: %u\n", pTestCase->timeTaken);
+    }
 }
 
