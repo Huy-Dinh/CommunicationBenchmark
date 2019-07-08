@@ -131,6 +131,10 @@ void printReceiveResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Expected %u packets\n", pTestCase->mNumberOfPacket);
     benchmarkPrint("   Received %u correct packets\n", pTestCase->mReceiveResult.noOfReceivedPackets);
     benchmarkPrint("   Received %u wrong packets\n", pTestCase->mReceiveResult.noOfWrongPackets);
+    if (pTestCase->timeTaken != 0)
+    {
+        benchmarkPrint("   Time taken: %u\n", pTestCase->timeTaken);
+    }
 }
 
 void printSendResult(BenchmarkTestCase_t* pTestCase)

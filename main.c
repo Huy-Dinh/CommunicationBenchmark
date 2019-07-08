@@ -67,6 +67,7 @@ int main()
     myReceiver.mTestCases = testCases;
     myReceiver.mCurrentTestCase = 0;
     myReceiver.mState = RECEIVER_STATE_IDLE;
+    myReceiver.pGetTickFunction = getMicroseconds;
     
     unsigned long lastTime = getMicroseconds();
     while (getMicroseconds() - lastTime < 5000000)

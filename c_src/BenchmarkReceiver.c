@@ -9,6 +9,8 @@ void runStateMachine(BenchmarkReceiver_t* pReceiver, BenchmarkReceiverEvent_t ev
             {
                 pReceiver->mState = RECEIVER_STATE_IN_CASE;
                 pReceiver->mCurrentTestCase = pBuffer[1];
+                if (pReceiver->pGetTickFunction != nullptr)
+                    pReceiver->mTestCases[pReceiver->mCurrentTestCase].timeTaken = pReceiver->pGetTickFunction();
             }
             break;
         case RECEIVER_STATE_IN_CASE:
@@ -18,6 +20,11 @@ void runStateMachine(BenchmarkReceiver_t* pReceiver, BenchmarkReceiverEvent_t ev
             if (evt == RECEIVER_EVT_CASE_END)
             {
                 pReceiver->mState = RECEIVER_STATE_IDLE;
+                if (pReceiver->pGetTickFunction != nullptr)
+                {
+                    pReceiver->mTestCases[pReceiver->mCurrentTestCase].timeTaken = \
+                        pReceiver->pGetTickFunction() - pReceiver->mTestCases[pReceiver->mCurrentTestCase].timeTaken;
+                }
                 printReceiveResult(&(pReceiver->mTestCases[pReceiver->mCurrentTestCase]));
             }
             else if (evt == RECEIVER_EVT_PACKET)
@@ -26,6 +33,11 @@ void runStateMachine(BenchmarkReceiver_t* pReceiver, BenchmarkReceiverEvent_t ev
                 if (BENCHMARK_PACKET_CHECK_PASS_FINISH == 
                     checkReceivedPacket(&(pReceiver->mTestCases[pReceiver->mCurrentTestCase]), pBuffer, size))
                 {
+                    if (pReceiver->pGetTickFunction != nullptr)
+                    {
+                        pReceiver->mTestCases[pReceiver->mCurrentTestCase].timeTaken = \
+                            pReceiver->pGetTickFunction() - pReceiver->mTestCases[pReceiver->mCurrentTestCase].timeTaken;
+                    }
                     pReceiver->mState = RECEIVER_STATE_IDLE;
                     printReceiveResult(&(pReceiver->mTestCases[pReceiver->mCurrentTestCase]));
                 }
