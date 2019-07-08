@@ -1,11 +1,12 @@
 #include "BenchmarkReceiver.h"
 
-BenchmarkReceiver::BenchmarkReceiver(BenchmarkTestCase * testCases, unsigned int numberOfTestCases)
+BenchmarkReceiver::BenchmarkReceiver(BenchmarkTestCase * testCases, unsigned int numberOfTestCases, getTickFuncPtr_t getTickFunction)
 {
     mTestCases = testCases;
     mNumberOfTestCases = numberOfTestCases;
     mState = RECEIVER_STATE_IDLE;
     mCurrentTestCase = 255;
+    pGetTickFunction = getTickFunction;
 }
 
 void BenchmarkReceiver::receive(unsigned char * pBuffer, unsigned int size)
@@ -42,6 +43,8 @@ void BenchmarkReceiver::runStateMachine(BenchmarkReceiverEvent_t evt, unsigned c
             {
                 mState = RECEIVER_STATE_IN_CASE;
                 mCurrentTestCase = pBuffer[1];
+                if (pGetTickFunction != nullptr)
+                   mTestCases[mCurrentTestCase].mTimeTaken = pGetTickFunction();
             }
             break;
         case RECEIVER_STATE_IN_CASE:
@@ -51,6 +54,8 @@ void BenchmarkReceiver::runStateMachine(BenchmarkReceiverEvent_t evt, unsigned c
             if (evt == RECEIVER_EVT_CASE_END)
             {
                 mState = RECEIVER_STATE_IDLE;
+                if (pGetTickFunction != nullptr)
+                    mTestCases[mCurrentTestCase].mTimeTaken = pGetTickFunction() - mTestCases[mCurrentTestCase].mTimeTaken;
                 mTestCases[mCurrentTestCase].printReceiveResult();
             }
             else if (evt == RECEIVER_EVT_PACKET)
@@ -60,6 +65,8 @@ void BenchmarkReceiver::runStateMachine(BenchmarkReceiverEvent_t evt, unsigned c
                     mTestCases[mCurrentTestCase].checkReceivedPacket(pBuffer, size))
                 {
                     mState = RECEIVER_STATE_IDLE;
+                    if (pGetTickFunction != nullptr)
+                        mTestCases[mCurrentTestCase].mTimeTaken = pGetTickFunction() - mTestCases[mCurrentTestCase].mTimeTaken;
                     mTestCases[mCurrentTestCase].printReceiveResult();
                 }
             }

@@ -14,6 +14,7 @@ BenchmarkTestCase::BenchmarkTestCase(char* testCaseName, unsigned int packetSize
     mNumberOfPacket = numberOfPacket;
     mPacketDelay = packetDelay;
     pDataBuffer = dataPointer;
+    mTimeTaken = 0;
 
     mSendResult.verdict = BENCHMARK_SEND_FAIL;
     mSendResult.noOfPacketsSent = 0;
@@ -143,6 +144,8 @@ void BenchmarkTestCase::printReceiveResult()
     benchmarkPrint("   Expected %u packets\n", mNumberOfPacket);
     benchmarkPrint("   Received %u correct packets\n", mReceiveResult.noOfReceivedPackets);
     benchmarkPrint("   Received %u wrong packets\n", mReceiveResult.noOfWrongPackets);
+    if (mTimeTaken != 0)
+        benchmarkPrint("   Time taken: %u\n", mTimeTaken);
 }
 
 void BenchmarkTestCase::printSendResult()

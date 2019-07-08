@@ -70,6 +70,8 @@ private:
     BenchmarkSendResult_t mSendResult;
     BenchmarkReceiveResult_t mReceiveResult;
 public:
+    BenchmarkTime_t mTimeTaken;
+
     BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
                         unsigned int numberOfPacket, unsigned int packetDelay, 
                         unsigned char * dataPointer);

@@ -20,20 +20,6 @@ BenchmarkTestCase sendTestCases[NUMBER_OF_TESTCASES] =
     BenchmarkTestCase("My Test case 3", 1000, 100000, 10, testBuffer)
 };
 
-
-BenchmarkReceiver myReceiver(testCases, NUMBER_OF_TESTCASES);
-
-void mock_receive_callback(unsigned char* pBuffer, unsigned int size)
-{
-    myReceiver.receive(pBuffer, size);
-}
-
-BenchmarkSendVerdict_t mySendFunction(unsigned char* pBuffer, unsigned int size)
-{
-    mock_receive_callback(pBuffer, size);
-    return BENCHMARK_SEND_PASS;
-}
-
 /* Time ticks */
 
 LARGE_INTEGER nFrequency;
@@ -49,6 +35,19 @@ unsigned long getMicroseconds()
     currentTickCount.QuadPart *= 1000000;
     currentTickCount.QuadPart /= nFrequency.QuadPart;
     return (unsigned long) currentTickCount.QuadPart;
+}
+
+BenchmarkReceiver myReceiver(testCases, NUMBER_OF_TESTCASES, getMicroseconds);
+
+void mock_receive_callback(unsigned char* pBuffer, unsigned int size)
+{
+    myReceiver.receive(pBuffer, size);
+}
+
+BenchmarkSendVerdict_t mySendFunction(unsigned char* pBuffer, unsigned int size)
+{
+    mock_receive_callback(pBuffer, size);
+    return BENCHMARK_SEND_PASS;
 }
 
 void mock_delay_function(unsigned long delayTime)

@@ -22,12 +22,13 @@ class BenchmarkReceiver
 
 private:
     BenchmarkTestCase* mTestCases;
-    unsigned int mNumberOfTestCases;
-    unsigned int mCurrentTestCase;
+    unsigned char mNumberOfTestCases;
+    unsigned char mCurrentTestCase;
     BenchmarkReceiverState_t mState;
+    getTickFuncPtr_t pGetTickFunction;
     void runStateMachine(BenchmarkReceiverEvent_t evt, unsigned char * pBuffer, unsigned int size);
 public:
-    BenchmarkReceiver(BenchmarkTestCase * testCases, unsigned int numberOfTestCases);
+    BenchmarkReceiver(BenchmarkTestCase * testCases, unsigned int numberOfTestCases, getTickFuncPtr_t getTickFunction);
     void receive(unsigned char * pBuffer, unsigned int size);
 };
 

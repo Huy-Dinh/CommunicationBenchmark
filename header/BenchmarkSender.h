@@ -8,7 +8,7 @@ class BenchmarkSender
 {
 private:
     BenchmarkTestCase* mTestCases;
-    unsigned int mNumberOfTestCases;
+    unsigned char mNumberOfTestCases;
     unsigned long mDelayBetweenTestCases;
     sendFuncPtr_t pSendFunction;
     delayFuncPtr_t pDelayFunction;
