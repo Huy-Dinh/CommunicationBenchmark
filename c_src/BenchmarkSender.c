@@ -14,14 +14,17 @@ void runSend(BenchmarkSender_t* pSender)
             if (pSender->mTestCases[pSender->mCurrentTestCase].mSendResult.noOfPacketsSent == 0)
             {
                 unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, pSender->mCurrentTestCase};
-                (*pSender->pSendFunction)(controlWord, 2);
+                if ((*pSender->pSendFunction)(controlWord, 2) == BENCHMARK_SEND_FAIL)
+                    return;
             }
             BenchmarkSendResult_t sendResult = runSendTestCase(&(pSender->mTestCases[pSender->mCurrentTestCase]), 
                                                             pSender->pSendFunction, pSender->pGetTickFunction);
             if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
             {
                 unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, pSender->mCurrentTestCase};
-                (*pSender->pSendFunction)(controlWord, 2);
+                if ((*pSender->pSendFunction)(controlWord, 2) == BENCHMARK_SEND_FAIL)
+                    return;
+                    
                 printSendResult(&(pSender->mTestCases[pSender->mCurrentTestCase]));
                 ++(pSender->mCurrentTestCase);
                 pSender->mLastTestCaseTime = pSender->pGetTickFunction();
