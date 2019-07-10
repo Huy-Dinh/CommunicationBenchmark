@@ -133,7 +133,7 @@ void printReceiveResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Received %u wrong packets\n", pTestCase->mReceiveResult.noOfWrongPackets);
     if (pTestCase->timeTaken != 0)
     {
-        benchmarkPrint("   Time taken: %u\n", pTestCase->timeTaken);
+        benchmarkPrint("   Time taken: %llu\n", pTestCase->timeTaken);
     }
 }
 
@@ -160,7 +160,7 @@ void printSendResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Missed %u deadlines\n", pTestCase->mSendResult.noOfMissedDeadlines);
     if (pTestCase->timeTaken != 0)
     {
-        benchmarkPrint("   Time taken: %u\n", pTestCase->timeTaken);
+        benchmarkPrint("   Time taken: %llu\n", pTestCase->timeTaken);
     }
 }
 
