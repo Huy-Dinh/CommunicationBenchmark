@@ -57,15 +57,7 @@ BenchmarkSendResult_t runThroughputTestCase(BenchmarkTestCase_t* pTestCase, send
 
     if (pTestCase->mSendResult.verdict == BENCHMARK_SEND_UNDECIDED)
     {
-        if ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) != BENCHMARK_SEND_PASS)
-        {
-            /* If the number of send failure surpasses what is specified */
-            if (++failureCount >= BENCHMARK_MAX_SEND_FAILURE)
-            {
-                pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
-            }
-        }
-        else
+        while ((*pSendFunction)(pTestCase->pDataBuffer, pTestCase->mPacketSize) == BENCHMARK_SEND_PASS)
         {
             failureCount = 0;
             /* Increase the counter for successfully sent bytes */
@@ -74,9 +66,14 @@ BenchmarkSendResult_t runThroughputTestCase(BenchmarkTestCase_t* pTestCase, send
                 /* If we reach here it's assumed that every packets have been put into 
                 the buffer successfully, only the number of missed deadlines need to be checked */
                 pTestCase->mSendResult.verdict = BENCHMARK_SEND_PASS;
+                break;
             }
         }
-        
+        /* If the number of send failure surpasses what is specified */
+        if (++failureCount >= BENCHMARK_MAX_SEND_FAILURE)
+        {
+            pTestCase->mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        }
     }
     return pTestCase->mSendResult;
 }
@@ -133,7 +130,7 @@ void printReceiveResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Received %u wrong packets\n", pTestCase->mReceiveResult.noOfWrongPackets);
     if (pTestCase->timeTaken != 0)
     {
-        benchmarkPrint("   Time taken: %llu\n", pTestCase->timeTaken);
+        benchmarkPrint("   Time taken: %lu\n", pTestCase->timeTaken);
     }
 }
 
@@ -160,7 +157,7 @@ void printSendResult(BenchmarkTestCase_t* pTestCase)
     benchmarkPrint("   Missed %u deadlines\n", pTestCase->mSendResult.noOfMissedDeadlines);
     if (pTestCase->timeTaken != 0)
     {
-        benchmarkPrint("   Time taken: %llu\n", pTestCase->timeTaken);
+        benchmarkPrint("   Time taken: %lu\n", pTestCase->timeTaken);
     }
 }
 
