@@ -15,7 +15,7 @@ BenchmarkTestCase testCases[NUMBER_OF_TESTCASES] =
 
 BenchmarkTestCase sendTestCases[NUMBER_OF_TESTCASES] =
 {
-    BenchmarkTestCase("My Test case 1", 1, 50, 10, testBuffer),
+    BenchmarkTestCase("My Test case 1", 1, 100000, 10, testBuffer),
     BenchmarkTestCase("My Test case 2", 100, 100000, 10, testBuffer),
     BenchmarkTestCase("My Test case 3", 1000, 100000, 10, testBuffer)
 };
@@ -59,7 +59,8 @@ void mock_delay_function(unsigned long delayTime)
 int main()
 {
     getFrequency();
-    BenchmarkSender mySender(sendTestCases, NUMBER_OF_TESTCASES, &mySendFunction, &mock_delay_function, &getMicroseconds, 2000000);
-    mySender.runSend();
+    BenchmarkSender mySender(sendTestCases, NUMBER_OF_TESTCASES, &mySendFunction, &getMicroseconds, 2000000);
+    unsigned long startingTime = getMicroseconds();
+    while (getMicroseconds() - startingTime < 5000000)
+        mySender.runThroughputTest();
 }
-

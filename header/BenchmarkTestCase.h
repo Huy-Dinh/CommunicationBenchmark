@@ -1,13 +1,13 @@
 #ifndef BENCHMARKTESTCASE_H
 #define BENCHMARKTESTCASE_H
 
-#include <iostream>
 #include "BenchmarkConfig.h"
 
 /* The result of the sending attempt */
 typedef enum
 {
-    BENCHMARK_SEND_PASS = 0,
+    BENCHMARK_SEND_UNDECIDED = 0,
+    BENCHMARK_SEND_PASS,
     BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES,
     BENCHMARK_SEND_FAIL
 } BenchmarkSendVerdict_t;
@@ -51,7 +51,6 @@ typedef enum
 
 /* Callback function pointer declarations */
 typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
-typedef void (*delayFuncPtr_t)(BenchmarkTime_t);
 typedef BenchmarkTime_t (*getTickFuncPtr_t)();
 
 class BenchmarkTestCase
@@ -62,23 +61,23 @@ private:
     unsigned int mNumberOfPacket;
     unsigned int mPacketDelay;
     unsigned char * pDataBuffer;
+    BenchmarkTime_t lastSentTimestamp;
 
     static sendFuncPtr_t pSendFunction;
-    static delayFuncPtr_t pDelayFunction;
     static getTickFuncPtr_t pGetTickFunction;
-
-    BenchmarkSendResult_t mSendResult;
     BenchmarkReceiveResult_t mReceiveResult;
+
 public:
+    BenchmarkSendResult_t mSendResult;
     BenchmarkTime_t mTimeTaken;
 
     BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
                         unsigned int numberOfPacket, unsigned int packetDelay, 
                         unsigned char * dataPointer);
     BenchmarkSendResult_t runSend();
+    BenchmarkSendResult_t runThroughputTest();
     BenchmarkPacketCheckResult_t checkReceivedPacket(unsigned char * pBuffer, unsigned int length);
     static void setSendFunction(sendFuncPtr_t sendFunction);
-    static void setDelayFunction(delayFuncPtr_t delayFunction);
     static void setGetTickFunction(getTickFuncPtr_t getTickFunction);
     void printSendResult();
     void printReceiveResult();

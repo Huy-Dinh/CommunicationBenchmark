@@ -1,44 +1,81 @@
 #include "BenchmarkSender.h"
 
 BenchmarkSender::BenchmarkSender(BenchmarkTestCase* testCases, unsigned int numberOfTestCase, sendFuncPtr_t sendFunction,
-                                    delayFuncPtr_t delayFunction, getTickFuncPtr_t getTickFunction, unsigned long delayBetweenTestCases)
+                    getTickFuncPtr_t getTickFunction, unsigned long delayBetweenTestCases)
 {
     mTestCases = testCases;
     mNumberOfTestCases = numberOfTestCase;
+    mCurrentTestCase = 0;
     pSendFunction = sendFunction;
-    pDelayFunction = delayFunction;
     pGetTickFunction = getTickFunction;
     mDelayBetweenTestCases = delayBetweenTestCases;
+    mLastTestCaseTime = 0;
 }
 
 void BenchmarkSender::runSend()
 {
     /* Check preconditions, no need to check send and getTick because they are
-        already checked inside the test case */
+    already checked inside the test case */
     if (mTestCases == nullptr) return;
-    if (pDelayFunction == nullptr) return;
+    if (pGetTickFunction == nullptr || pSendFunction == nullptr) return;
 
-    /* Set the callbacks onto the test cases
-        Because the callback attributes are static, this is done only once*/
     BenchmarkTestCase::setSendFunction(pSendFunction);
-    BenchmarkTestCase::setDelayFunction(pDelayFunction);
     BenchmarkTestCase::setGetTickFunction(pGetTickFunction);
-    
-    /* Loop through the array and run every test case entry */
-    for (unsigned int i = 0; i < mNumberOfTestCases; ++i)
+
+    if (mCurrentTestCase < mNumberOfTestCases)
     {
-        /* Send starting control word */
-        unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, (unsigned char) i};
-        (*pSendFunction)(controlWord, 2);
+        if (pGetTickFunction() - mLastTestCaseTime > mDelayBetweenTestCases)
+        {
+            if (mTestCases[mCurrentTestCase].mSendResult.noOfPacketsSent == 0)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, mCurrentTestCase};
+                if ((*pSendFunction)(controlWord, 2) != BENCHMARK_SEND_PASS)
+                    return;
+            }
+            BenchmarkSendResult_t sendResult = mTestCases[mCurrentTestCase].runSend();
+            if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, mCurrentTestCase};
+                if ((*pSendFunction)(controlWord, 2) != BENCHMARK_SEND_PASS)
+                    return;
 
-        /* Send benchmark payloads */
-        mTestCases[i].runSend();
-        mTestCases[i].printSendResult();
+                mTestCases[mCurrentTestCase].printSendResult();
+                ++mCurrentTestCase;
+                mLastTestCaseTime = pGetTickFunction();
+            }
+        }
+    }
+}
 
-        /* Send ending control word */
-        controlWord[0] = (unsigned char) BENCHMARK_CTRL_END_CASE;
-        (*pSendFunction)(controlWord, 2);
+void BenchmarkSender::runThroughputTest()
+{
+    if (mTestCases == nullptr) return;
+    if (pGetTickFunction == nullptr || pSendFunction == nullptr) return;
 
-        (*pDelayFunction)(mDelayBetweenTestCases);
+    BenchmarkTestCase::setSendFunction(pSendFunction);
+    BenchmarkTestCase::setGetTickFunction(pGetTickFunction);
+
+    if (mCurrentTestCase < mNumberOfTestCases)
+    {
+        if (pGetTickFunction() - mLastTestCaseTime > mDelayBetweenTestCases)
+        {
+            if (mTestCases[mCurrentTestCase].mSendResult.noOfPacketsSent == 0)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_START_CASE, mCurrentTestCase};
+                (*pSendFunction)(controlWord, 2);
+                mTestCases[mCurrentTestCase].mTimeTaken = pGetTickFunction();
+            }
+            BenchmarkSendResult_t sendResult = mTestCases[mCurrentTestCase].runThroughputTest();
+            if (sendResult.verdict != BENCHMARK_SEND_UNDECIDED)
+            {
+                unsigned char controlWord[2] = {(unsigned char) BENCHMARK_CTRL_END_CASE, mCurrentTestCase};
+                (*pSendFunction)(controlWord, 2);
+
+                mTestCases[mCurrentTestCase].mTimeTaken = pGetTickFunction() - mTestCases[mCurrentTestCase].mTimeTaken;
+                mTestCases[mCurrentTestCase].printSendResult();
+                ++(mCurrentTestCase);
+                mLastTestCaseTime = pGetTickFunction();
+            }
+        }
     }
 }
