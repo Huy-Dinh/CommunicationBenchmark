@@ -22,7 +22,7 @@ typedef unsigned long BenchmarkTime_t;
 #if BENCHMARK_ENABLE_PRINT
     #define benchmarkPrint(...) BENCHMARK_PRINT_FUNCTION(__VA_ARGS__)
 #else
-    #define benchmarkPrint(...)
+    #define benchmarkPrint(...) {}
 #endif
 
 #endif
