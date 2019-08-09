@@ -51,6 +51,7 @@ typedef enum
 
 /* Callback function pointer declarations */
 typedef BenchmarkSendVerdict_t (*sendFuncPtr_t)(unsigned char *, unsigned int);
+typedef void (*delayFuncPtr_t)(BenchmarkTime_t);
 typedef BenchmarkTime_t (*getTickFuncPtr_t)();
 
 class BenchmarkTestCase
@@ -64,6 +65,7 @@ private:
     BenchmarkTime_t lastSentTimestamp;
 
     static sendFuncPtr_t pSendFunction;
+    static delayFuncPtr_t pDelayFunction;
     static getTickFuncPtr_t pGetTickFunction;
     BenchmarkReceiveResult_t mReceiveResult;
 
@@ -76,8 +78,10 @@ public:
                         unsigned char * dataPointer);
     BenchmarkSendResult_t runSend();
     BenchmarkSendResult_t runThroughputTest();
+    BenchmarkSendResult_t runSendBlocking();
     BenchmarkPacketCheckResult_t checkReceivedPacket(unsigned char * pBuffer, unsigned int length);
     static void setSendFunction(sendFuncPtr_t sendFunction);
+    static void setDelayFunction(delayFuncPtr_t delayFunction);
     static void setGetTickFunction(getTickFuncPtr_t getTickFunction);
     void printSendResult();
     void printReceiveResult();

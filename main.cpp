@@ -59,7 +59,7 @@ void mock_delay_function(unsigned long delayTime)
 int main()
 {
     getFrequency();
-    BenchmarkSender mySender(sendTestCases, NUMBER_OF_TESTCASES, &mySendFunction, &getMicroseconds, 2000000);
+    BenchmarkSender mySender(sendTestCases, NUMBER_OF_TESTCASES, &mySendFunction, nullptr, &getMicroseconds, 2000000);
     unsigned long startingTime = getMicroseconds();
     while (getMicroseconds() - startingTime < 5000000)
         mySender.runThroughputTest();

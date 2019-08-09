@@ -4,6 +4,7 @@
 
 /* the send function pointer defaults to  */
 sendFuncPtr_t BenchmarkTestCase::pSendFunction = nullptr;
+delayFuncPtr_t BenchmarkTestCase::pDelayFunction = nullptr;
 getTickFuncPtr_t BenchmarkTestCase::pGetTickFunction = nullptr;
 
 BenchmarkTestCase::BenchmarkTestCase(char* testCaseName, unsigned int packetSize, 
@@ -62,6 +63,45 @@ BenchmarkSendResult_t BenchmarkTestCase::runSend()
            }
         }
     }
+    return mSendResult;
+}
+
+BenchmarkSendResult_t BenchmarkTestCase::runSendBlocking()
+{
+    /* returns fail if the callbacks are not registered
+        or the sending buffer pointer is not assigned to a valid buffer 
+        or the length of the packet is 0*/   
+    if (pSendFunction == nullptr || pDelayFunction == nullptr 
+        || pDataBuffer == nullptr
+        || mNumberOfPacket == 0)
+    {
+        mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        return mSendResult;
+    }
+
+    unsigned long startTime, endTime, elapsedTime;
+    for (unsigned int i = 0; i < mNumberOfPacket - 1; ++i)
+    {
+        /* If an attempt to send fails, the sending test fails */
+        if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
+        {
+            mSendResult.verdict = BENCHMARK_SEND_FAIL;
+            return mSendResult;
+        }
+        /* Increase the counter for successfully sent bytes */
+        ++mSendResult.noOfPacketsSent;
+        (*pDelayFunction)(mPacketDelay);
+    }
+    /* Send the last packet without a delay */
+    if ((*pSendFunction)(pDataBuffer, mPacketSize) != BENCHMARK_SEND_PASS)
+    {
+        mSendResult.verdict = BENCHMARK_SEND_FAIL;
+        return mSendResult;
+    }
+    ++mSendResult.noOfPacketsSent;
+    /* If we reach here it's assumed that every packets have been put into 
+        the buffer successfully, only the number of missed deadlines need to be checked */
+    mSendResult.verdict = (mSendResult.noOfMissedDeadlines == 0) ? BENCHMARK_SEND_PASS : BENCHMARK_SEND_PASS_WITH_MISSED_DEADLINES;
     return mSendResult;
 }
 
@@ -136,6 +176,11 @@ BenchmarkPacketCheckResult_t BenchmarkTestCase::checkReceivedPacket(unsigned cha
 void BenchmarkTestCase::setSendFunction(sendFuncPtr_t sendFunction)
 {
     pSendFunction = sendFunction;
+}
+
+void BenchmarkTestCase::setDelayFunction(delayFuncPtr_t delayFunction)
+{
+    pDelayFunction = delayFunction;
 }
 
 void BenchmarkTestCase::setGetTickFunction(getTickFuncPtr_t getTickFunction)
