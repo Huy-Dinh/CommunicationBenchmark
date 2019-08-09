@@ -9,6 +9,7 @@ BenchmarkSender::BenchmarkSender(BenchmarkTestCase* testCases, unsigned int numb
     mCurrentTestCase = 0;
     pSendFunction = sendFunction;
     pGetTickFunction = getTickFunction;
+    pDelayFunction = delayFunction;
     mDelayBetweenTestCases = delayBetweenTestCases;
     mLastTestCaseTime = 0;
 }
