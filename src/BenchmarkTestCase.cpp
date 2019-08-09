@@ -79,7 +79,6 @@ BenchmarkSendResult_t BenchmarkTestCase::runSendBlocking()
         return mSendResult;
     }
 
-    unsigned long startTime, endTime, elapsedTime;
     for (unsigned int i = 0; i < mNumberOfPacket - 1; ++i)
     {
         /* If an attempt to send fails, the sending test fails */
