@@ -25,6 +25,8 @@ BenchmarkTestCase::BenchmarkTestCase(char* testCaseName, unsigned int packetSize
     mReceiveResult.verdict = BENCHMARK_RECEIVE_FAIL;
     mReceiveResult.noOfReceivedPackets = 0;
     mReceiveResult.noOfWrongPackets = 0;
+
+    lastSentTimestamp = 0;
 }
 
 BenchmarkSendResult_t BenchmarkTestCase::runSend()
